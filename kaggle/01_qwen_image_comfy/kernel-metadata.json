@@ -1,0 +1,16 @@
+{
+  "id": "YOUR_KAGGLE_USERNAME/qwen-image-21-comfy-int8",
+  "title": "Qwen Image 2.1 ComfyUI INT8",
+  "code_file": "qwen_image_comfy_int8.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": "true",
+  "enable_gpu": "true",
+  "enable_tpu": "false",
+  "enable_internet": "true",
+  "machine_shape": "",
+  "dataset_sources": [],
+  "competition_sources": [],
+  "kernel_sources": [],
+  "model_sources": []
+}
