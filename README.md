@@ -125,24 +125,31 @@ Enable **GPU** and **Internet** on the kernels.
 
 ## Model caching and the Hugging Face fallback
 
-Downloading ~17 GB every session is wasteful, so notebook `07` reads the weights from a
-Kaggle Dataset when it is mounted and falls back to Hugging Face otherwise:
+Downloading ~17 GB every session is wasteful, so notebook `07` resolves the weights
+robustly instead of trusting one hard-coded path:
 
-1. It probes the known dataset mount paths for all three files.
-2. If found, it uses them (`model_source = kaggle_dataset`).
-3. If not, it downloads the same pinned files from `Comfy-Org/Qwen-Image-2.1`
-   (`model_source = huggingface_fallback`).
-4. Both branches are followed by a minimum-size check on every file.
+1. It **recursively searches `/kaggle/input`** for a folder that contains all three model
+   files at full size, so any mount layout works — `/kaggle/input/<name>/`,
+   `/kaggle/input/datasets/<user>/<name>/`, `/kaggle/input/<name>/<name>/`.
+2. If found, the weights are read directly from the read-only mount
+   (`model_source = kaggle_dataset`) — no copy, no download.
+3. Otherwise it builds a writable `ComfyUI/models` root and downloads the pinned files from
+   `Comfy-Org/Qwen-Image-2.1` (`model_source = huggingface_fallback`). Any valid file still
+   present under `/kaggle/input` is **reused via symlink** instead of being re-downloaded,
+   so even a partially broken dataset does not force a full 17 GB fetch.
+4. Every branch ends with a **minimum-size check** per file.
 
 The run records which path was taken in
 `/kaggle/working/interactive_test_status.json` (`model_source`, `models_root`,
-`model_dataset_available`) — the fastest way to tell "the dataset did not mount" from
-"Kaggle was just slow".
+`model_fallback_details`) — the fastest way to tell "the dataset did not mount" from
+"Kaggle was just slow", and to see how many files were reused vs downloaded.
 
-**Known limitation (being improved):** the dataset paths are matched against two
-hard-coded candidates, so an unexpected mount point silently triggers a full re-download,
-and a mounted-but-corrupt dataset fails hard instead of falling back. A recursive search
-plus a size-checked fallback is the next step.
+## Multiple reference images (image-edit)
+
+The official *Qwen Image 2.1 - Image Edit* workflow ships with two `LoadImage` nodes wired
+into `image_1` / `image_2` and **eight image slots in total** (Qwen-Image-2.1 accepts up to
+10 references). Load the workflow in the ComfyUI UI and attach the images you need — no
+workflow editing required.
 
 ## Security notes
 

@@ -21,6 +21,20 @@ Verified commands, pins and procedures for running Qwen-Image-2.1 on Kaggle.
 
 Total: 17 283 091 766 bytes (~17.3 GB).
 
+## Model resolution (notebook 07)
+
+`find_model_root()` recursively searches `/kaggle/input` for a folder holding all three
+model files at full size, so any mount layout works. If none is found, the notebook builds
+a writable `ComfyUI/models` root, reuses any valid file found under `/kaggle/input` via
+symlink, and downloads the rest from `Comfy-Org/Qwen-Image-2.1`. Every file is then checked
+against `MINIMUM_SIZES`. The chosen path is recorded as `model_source` (and
+`model_fallback_details`) in `interactive_test_status.json`.
+
+## Multiple references
+
+The official image-edit workflow has two `LoadImage` nodes (`image_1`, `image_2`) and eight
+image slots in total; attach more images in the ComfyUI UI as needed.
+
 ## Kaggle CLI
 
 ```bash
