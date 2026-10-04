@@ -30,6 +30,25 @@ symlink, and downloads the rest from `Comfy-Org/Qwen-Image-2.1`. Every file is t
 against `MINIMUM_SIZES`. The chosen path is recorded as `model_source` (and
 `model_fallback_details`) in `interactive_test_status.json`.
 
+## Startup diagnostics
+
+The first two things printed by notebook `07`, in order:
+
+```
+BOOT: notebook code started
+DATASET SCAN: done in <seconds> -> <root or None>
+```
+
+- `BOOT` appears before any filesystem work, so it proves the notebook actually started.
+- `DATASET SCAN` reports the elapsed time of model discovery.
+- No `BOOT` line at all ⇒ the delay is upstream (worker boot or dataset attach), not in
+  the notebook. The Kaggle `/kaggle/input` mount can be slow, and attaching a ~15 GB model
+  Dataset is the usual suspect.
+
+`find_model_root()` / `find_model_file()` use depth-limited patterns (`*` … `*/*/*/*/*`,
+0..5) rather than a full `rglob`, because an unbounded walk of `/kaggle/input` executes
+before the first print and can stall silently.
+
 ## Multiple references
 
 The official image-edit workflow has two `LoadImage` nodes (`image_1`, `image_2`) and eight

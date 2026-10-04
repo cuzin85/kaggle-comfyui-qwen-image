@@ -144,6 +144,30 @@ The run records which path was taken in
 `model_fallback_details`) — the fastest way to tell "the dataset did not mount" from
 "Kaggle was just slow", and to see how many files were reused vs downloaded.
 
+### Reading the startup log
+
+The notebook prints diagnostics *before* it touches the filesystem:
+
+```
+BOOT: notebook code started
+DATASET SCAN: scanning /kaggle/input (depth-limited 0..5) ...
+DATASET SCAN: done in 0.8s -> /kaggle/input/qwen-image-21-int8-models
+```
+
+`BOOT` proves the notebook is executing, and `DATASET SCAN` reports how long model
+discovery took. If `BOOT` never appears, the stall is on Kaggle's side (worker boot /
+dataset attach) rather than in this code — a useful distinction when a run sits at zero log
+output.
+
+The search is depth-limited (0..5) rather than an unbounded walk: `/kaggle/input` can be a
+slow FUSE mount, and an unbounded `rglob` would walk every attached dataset before the
+notebook prints anything.
+
+**If attaching the Dataset makes startup slower than downloading,** drop `dataset_sources`
+from `kernel-metadata.json`. The notebook then finds no dataset and falls back to Hugging
+Face automatically (`model_source = huggingface_fallback`) — on a fast link that can be the
+quicker option. Both paths are measured and reported.
+
 ## Multiple reference images (image-edit)
 
 The official *Qwen Image 2.1 - Image Edit* workflow ships with two `LoadImage` nodes wired
