@@ -1,8 +1,8 @@
 # Qwen-Image-2.1 on a free Kaggle GPU via ComfyUI
 
 Run **Qwen-Image-2.1** (official INT8 weights) through **ComfyUI** on Kaggle's free
-**2 × Tesla T4**, keep the ~17 GB model set cached as a **Kaggle Dataset**, and use
-the full ComfyUI **web UI in your browser** — text-to-image *and* image-edit —
+**2 × Tesla T4** — the ~17 GB of weights are fetched from Hugging Face in about 90 seconds —
+and use the full ComfyUI **web UI in your browser** — text-to-image *and* image-edit —
 through a **Cloudflare Quick Tunnel**.
 
 Everything is pinned (ComfyUI commit, official workflow commit, exact weight filenames
@@ -18,12 +18,13 @@ Free GPU notebooks are a great way to try large image models, but most "ComfyUI 
 Kaggle/Colab" snippets share three problems:
 
 1. **Not reproducible** — `main`/`latest` everywhere, no pinned commits.
-2. **Re-download tens of GB every session** — the Qwen-Image-2.1 INT8 set is ~17 GB.
+2. **Opaque weight handling** — ~17 GB must be present every run, and nobody measures
+   whether caching it in a Kaggle Dataset or re-downloading is actually faster.
 3. **Headless only** — one prompt per run, no way to actually use the ComfyUI UI.
 
-This project addresses all three: pinned versions, a reusable Kaggle Dataset for the
-weights (with a Hugging Face fallback), and an interactive browser session with a
-graceful session timer.
+This project addresses all three: pinned versions, a *measured* answer to the weight-caching
+question (short version: downloading beats attaching a Dataset — see below), and an
+interactive browser session with a graceful session timer.
 
 ## Architecture
 
@@ -31,7 +32,7 @@ graceful session timer.
 Kaggle notebook (2 x Tesla T4, 15 GB each)
         |
         +-- ComfyUI (main.py --lowvram --force-fp16)          :8188
-        |       models ->  Kaggle Dataset (/kaggle/input)  --(fallback)-->  Hugging Face
+        |       models <-  Hugging Face  (or a Kaggle Dataset, if you attach one)
         |
         +-- cloudflared quick tunnel  ->  https://<random>.trycloudflare.com
                                                 |
@@ -74,7 +75,7 @@ kaggle/
   01_qwen_image_comfy/                  headless Qwen-Image-2.1 t2i, pinned ComfyUI + official workflow
   02_comfyui_tunnel_test/               ComfyUI + Cloudflare tunnel smoke test (no model)
   07_qwen_comfyui_quick_interactive/    interactive UI: t2i + image-edit, graceful session timer
-  08_qwen_models_dataset/               builds the ~17 GB Kaggle Dataset from Hugging Face
+  08_qwen_models_dataset/               optional: builds the ~17 GB Kaggle Dataset from HF
 docs/
   RUNBOOK.md                            verified commands and pins
   RESULTS.md                            measurements and notes
@@ -94,18 +95,18 @@ Enable **GPU** and **Internet** on the kernels.
 
 1. **Set your Kaggle username.** In every `kaggle/*/kernel-metadata.json`, replace
    `YOUR_KAGGLE_USERNAME` in `id` with your own username (kernels are pushed under your
-   account). Do the same in the `dataset_sources` of notebook `07` after you create the
-   model Dataset.
+   account).
 
-2. **Build the model Dataset once** (CPU-only, Internet on). This downloads the three
-   INT8 files into the kernel output:
+2. **Skip the model Dataset by default.** Notebook `07` ships with an empty
+   `dataset_sources` and downloads the weights from Hugging Face on each run — measured
+   *faster* and far more predictable than attaching a Dataset (numbers below). Notebook `08`
+   is the optional builder if you still want to try it:
 
    ```bash
-   kaggle kernels push -p kaggle/08_qwen_models_dataset
+   kaggle kernels push -p kaggle/08_qwen_models_dataset   # optional
    ```
 
-   Then create a Kaggle **Dataset** from that output, e.g.
-   `<your-user>/qwen-image-21-int8-models`, and attach it to notebook `07`.
+   If you build one and attach it yourself, add it to `dataset_sources` of notebook `07`.
 
 3. **Baseline headless text-to-image** (GPU on):
 
@@ -123,25 +124,55 @@ Enable **GPU** and **Internet** on the kernels.
    Watch the live log for `COMFYUI IS READY` and `TUNNEL_URL=...`, open the URL, load the
    bundled *Text to Image* / *Image Edit* workflows, generate, then stop the notebook.
 
-## Model caching and the Hugging Face fallback
+## Model weights: why the Dataset is **not** attached
 
-Downloading ~17 GB every session is wasteful, so notebook `07` resolves the weights
-robustly instead of trusting one hard-coded path:
+Every session needs ~17 GB of weights, and there are two ways to get them: attach a
+**Kaggle Dataset** that already holds them, or **download from Hugging Face** on each run.
+The Dataset looks obviously better — but it was not, and the numbers below come from real
+runs of the same kernel on the same account.
 
-1. It **recursively searches `/kaggle/input`** for a folder that contains all three model
-   files at full size, so any mount layout works — `/kaggle/input/<name>/`,
+| Configuration | First log line appears | Reaches `COMFYUI IS READY` |
+|---|---|---|
+| **Dataset attached**, good case | ~80 s | — |
+| **Dataset attached**, bad case | 170 s, then nothing; abandoned after ~10 min | never |
+| **No Dataset, weights downloaded from HF** | **10.1 s** | **~182 s** |
+
+Without the Dataset the whole chain — clone ComfyUI, fetch `cloudflared`, **download all
+17.28 GB from Hugging Face**, start the server, open the tunnel — completed in
+**181.95 s** (`ready_at_seconds`). The weights themselves took roughly **87 s**
+(`qwen_models_ready` at 120.88 s, after `cloudflared` at 34.04 s), i.e. **~200 MB/s**.
+
+So attaching the Dataset:
+
+- **sometimes** works and saves the download;
+- **sometimes** hangs inside Kaggle's mount step **before the notebook even starts** — in
+  those runs the notebook prints *nothing at all*, because its first line comes only after
+  the container is up;
+- is not reproducible: 80 s vs 10+ min on the same kernel is a bad trade, and the bad case
+  costs GPU time and nerves with no output to show for it.
+
+**Decision: do not attach the model Dataset by default.** `dataset_sources` in
+[`kaggle/07_qwen_comfyui_quick_interactive/kernel-metadata.json`](kaggle/07_qwen_comfyui_quick_interactive/kernel-metadata.json)
+is left empty and the notebook downloads from `Comfy-Org/Qwen-Image-2.1` — fast and
+predictable. The Dataset stays an *optional* fast path if you have confirmed that your own
+account mounts it reliably.
+
+Attaching one is still safe, because the notebook resolves whatever is mounted robustly:
+
+1. It **searches `/kaggle/input`** (depth-limited 0..5) for a folder containing all three
+   model files at full size — `/kaggle/input/<name>/`,
    `/kaggle/input/datasets/<user>/<name>/`, `/kaggle/input/<name>/<name>/`.
-2. If found, the weights are read directly from the read-only mount
+2. If found, the weights are read straight from the read-only mount
    (`model_source = kaggle_dataset`) — no copy, no download.
 3. Otherwise it builds a writable `ComfyUI/models` root and downloads the pinned files from
    `Comfy-Org/Qwen-Image-2.1` (`model_source = huggingface_fallback`). Any valid file still
-   present under `/kaggle/input` is **reused via symlink** instead of being re-downloaded,
-   so even a partially broken dataset does not force a full 17 GB fetch.
+   present under `/kaggle/input` is **reused via symlink**, so a partially broken Dataset
+   does not force a full 17 GB fetch.
 4. Every branch ends with a **minimum-size check** per file.
 
 The run records which path was taken in
 `/kaggle/working/interactive_test_status.json` (`model_source`, `models_root`,
-`model_fallback_details`) — the fastest way to tell "the dataset did not mount" from
+`model_fallback_details`) — the fastest way to tell "the Dataset did not mount" from
 "Kaggle was just slow", and to see how many files were reused vs downloaded.
 
 ### Reading the startup log
@@ -151,7 +182,7 @@ The notebook prints diagnostics *before* it touches the filesystem:
 ```
 BOOT: notebook code started
 DATASET SCAN: scanning /kaggle/input (depth-limited 0..5) ...
-DATASET SCAN: done in 0.8s -> /kaggle/input/qwen-image-21-int8-models
+DATASET SCAN: done in 0.0s -> None
 ```
 
 `BOOT` proves the notebook is executing, and `DATASET SCAN` reports how long model
@@ -163,10 +194,9 @@ The search is depth-limited (0..5) rather than an unbounded walk: `/kaggle/input
 slow FUSE mount, and an unbounded `rglob` would walk every attached dataset before the
 notebook prints anything.
 
-**If attaching the Dataset makes startup slower than downloading,** drop `dataset_sources`
-from `kernel-metadata.json`. The notebook then finds no dataset and falls back to Hugging
-Face automatically (`model_source = huggingface_fallback`) — on a fast link that can be the
-quicker option. Both paths are measured and reported.
+`dataset_sources` ships **empty**, so `model_source` is `huggingface_fallback` by default.
+If you attach a Dataset and it turns out to be slower, drop `dataset_sources` again — both
+paths are measured and reported, so the choice is always visible in the log.
 
 ## Multiple reference images (image-edit)
 
@@ -211,7 +241,7 @@ Honest engineering log — things that did **not** make the cut:
 ## Related work
 
 The general idea of running ComfyUI on free Kaggle/Colab GPUs exists elsewhere; this repo
-aims to be the reproducible, INT8, dataset-cached variant. Related public projects:
+aims to be the reproducible, INT8, fully measured variant. Related public projects:
 [`chandan11248/qwen-image-21-t4`](https://github.com/chandan11248/qwen-image-21-t4)
 (Qwen-Image-2.1 GGUF on Kaggle T4 with a mini-UI) and
 [`kayas881/comfyui-kaggle`](https://github.com/kayas881/comfyui-kaggle) (generic

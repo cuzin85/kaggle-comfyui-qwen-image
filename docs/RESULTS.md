@@ -8,6 +8,33 @@ All numbers below come from real runs on Kaggle's free 2 × Tesla T4 (15 GB VRAM
 - 2 × Tesla T4 (15 636 037 632 bytes each); CUDA smoke test returned `passed: true`.
 - Internet reachable from the notebook: HTTP 200.
 
+## Startup: Dataset attached vs download from Hugging Face
+
+Notebook `07`, same kernel, same account (04.10.2026). This is the experiment that decided
+the default: **the model Dataset is no longer attached.**
+
+| Configuration | First log line appears | Reaches `COMFYUI IS READY` |
+|---|---|---|
+| Dataset attached, good case | ~80 s | — |
+| Dataset attached, bad case | 170 s, then no output; abandoned after ~10 min | never |
+| **No Dataset, weights from Hugging Face** | **10.1 s** | **181.95 s** |
+
+Timeline of the no-Dataset run (`elapsed_seconds` measured from notebook start):
+
+| Stage | elapsed_seconds |
+|---|---|
+| `BOOT: notebook code started` | 10.1 s (from kernel session start) |
+| `DATASET SCAN: done in 0.0s -> None` | 0.02 |
+| `cloudflared` downloaded (40 122 749 bytes) | 34.04 |
+| `qwen_models_ready` — all three weights fetched | 120.88 |
+| `downloading_official_ui_workflows` | 120.92 |
+| `tunnel_ready_at_seconds` | 179.51 |
+| `ready_at_seconds` | **181.95** |
+
+- Weights: 17 283 091 766 bytes in ≈ 87 s (34.04 → 120.88) ≈ **200 MB/s**.
+- `model_source = huggingface_fallback`, all three files reported `downloaded`.
+- The tunnel answered **HTTP 200 in 0.54 s** immediately after ready.
+
 ## Text-to-image
 
 | Run | Resolution | Steps | Time |

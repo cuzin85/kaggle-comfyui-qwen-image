@@ -23,12 +23,18 @@ Total: 17 283 091 766 bytes (~17.3 GB).
 
 ## Model resolution (notebook 07)
 
-`find_model_root()` recursively searches `/kaggle/input` for a folder holding all three
-model files at full size, so any mount layout works. If none is found, the notebook builds
-a writable `ComfyUI/models` root, reuses any valid file found under `/kaggle/input` via
-symlink, and downloads the rest from `Comfy-Org/Qwen-Image-2.1`. Every file is then checked
-against `MINIMUM_SIZES`. The chosen path is recorded as `model_source` (and
-`model_fallback_details`) in `interactive_test_status.json`.
+**By default `dataset_sources` is empty**, so this notebook downloads the weights from
+Hugging Face on every run. Attaching a model Dataset was measured to be *slower* on
+average and to hang occasionally before the notebook even starts — see "Model weights: why
+the Dataset is **not** attached" in the README.
+
+If a Dataset *is* attached, `find_model_root()` searches `/kaggle/input` (depth-limited
+0..5) for a folder holding all three model files at full size, so any mount layout works.
+If none is found, the notebook builds a writable `ComfyUI/models` root, reuses any valid
+file found under `/kaggle/input` via symlink, and downloads the rest from
+`Comfy-Org/Qwen-Image-2.1`. Every file is then checked against `MINIMUM_SIZES`. The chosen
+path is recorded as `model_source` (and `model_fallback_details`) in
+`interactive_test_status.json`.
 
 ## Startup diagnostics
 
