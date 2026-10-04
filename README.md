@@ -67,6 +67,10 @@ Kaggle notebook (2 x Tesla T4, 15 GB each)
 Headline: a 1024×1024 Qwen-Image-2.1 generation lands around **5 minutes** on free
 Kaggle hardware, first image of a session included.
 
+Repeat (04.10.2026, notebook `07`, no Dataset): t2i **309.07 s**, image-edit with
+1 reference **506.12 s**, image-edit with 2 references **652.96 s** (ComfyUI display).
+Full numbers: [`docs/RESULTS.md`](docs/RESULTS.md).
+
 ## Repository layout
 
 ```
