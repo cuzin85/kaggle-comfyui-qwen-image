@@ -1,0 +1,18 @@
+{
+  "id": "YOUR_KAGGLE_USERNAME/qwen-comfyui-quick-interactive-test",
+  "title": "Qwen ComfyUI Quick Interactive Test",
+  "code_file": "qwen_comfyui_quick_interactive.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": "true",
+  "enable_gpu": "true",
+  "enable_tpu": "false",
+  "enable_internet": "true",
+  "machine_shape": "",
+  "dataset_sources": [
+    "YOUR_KAGGLE_USERNAME/qwen-image-21-int8-models"
+  ],
+  "competition_sources": [],
+  "kernel_sources": [],
+  "model_sources": []
+}
