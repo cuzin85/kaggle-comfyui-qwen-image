@@ -1,0 +1,70 @@
+[{"stream_name":"stderr","time":6.564884207,"data":"/usr/local/lib/python3.12/dist-packages/nbformat/__init__.py:96: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.\n"}
+,{"stream_name":"stderr","time":6.564957149,"data":"  validate(nb)\n"}
+,{"stream_name":"stderr","time":7.406162615,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":7.406207754,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":7.406214338,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":7.406219026,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":8.0229791,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":8.023011461,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":8.023016701,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":8.023022908,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":14.962033526,"data":"{\n"}
+,{"stream_name":"stdout","time":14.962064364,"data":"  \"python\": \"3.12.13 (main, Mar  4 2026, 09:23:07) [GCC 11.4.0]\",\n"}
+,{"stream_name":"stdout","time":14.962076016,"data":"  \"executable\": \"/usr/bin/python3\",\n"}
+,{"stream_name":"stdout","time":14.962080618,"data":"  \"platform\": \"Linux-6.12.90+-x86_64-with-glibc2.35\",\n"}
+,{"stream_name":"stdout","time":14.962083723,"data":"  \"machine\": \"x86_64\",\n"}
+,{"stream_name":"stdout","time":14.962086975,"data":"  \"processor\": \"x86_64\",\n"}
+,{"stream_name":"stdout","time":14.96208987,"data":"  \"cpu_count\": 4,\n"}
+,{"stream_name":"stdout","time":14.962092774,"data":"  \"kaggle_working_dir_exists\": true,\n"}
+,{"stream_name":"stdout","time":14.962095735,"data":"  \"meminfo_bytes\": {\n"}
+,{"stream_name":"stdout","time":14.962098694,"data":"    \"MemTotal\": 33659383808,\n"}
+,{"stream_name":"stdout","time":14.962101665,"data":"    \"MemAvailable\": 32431718400\n"}
+,{"stream_name":"stdout","time":14.962104542,"data":"  },\n"}
+,{"stream_name":"stdout","time":14.962107276,"data":"  \"disk_bytes\": {\n"}
+,{"stream_name":"stdout","time":14.962110273,"data":"    \"total\": 8656922775552,\n"}
+,{"stream_name":"stdout","time":14.96211309,"data":"    \"used\": 7556654313472,\n"}
+,{"stream_name":"stdout","time":14.962115953,"data":"    \"free\": 1100251684864\n"}
+,{"stream_name":"stdout","time":14.962118781000001,"data":"  },\n"}
+,{"stream_name":"stdout","time":14.962121589,"data":"  \"nvidia_smi\": {\n"}
+,{"stream_name":"stdout","time":14.962124391,"data":"    \"returncode\": 0,\n"}
+,{"stream_name":"stdout","time":14.962127264,"data":"    \"stdout\": \"Tesla T4, 15360 MiB, 580.159.04\\nTesla T4, 15360 MiB, 580.159.04\",\n"}
+,{"stream_name":"stdout","time":14.962130298,"data":"    \"stderr\": \"\"\n"}
+,{"stream_name":"stdout","time":14.962133211,"data":"  },\n"}
+,{"stream_name":"stdout","time":14.96213591,"data":"  \"torch\": {\n"}
+,{"stream_name":"stdout","time":14.962138724,"data":"    \"version\": \"2.10.0+cu128\",\n"}
+,{"stream_name":"stdout","time":14.962141641,"data":"    \"cuda_available\": true,\n"}
+,{"stream_name":"stdout","time":14.962152791,"data":"    \"cuda_version\": \"12.8\",\n"}
+,{"stream_name":"stdout","time":14.962155331,"data":"    \"cudnn_version\": 91002,\n"}
+,{"stream_name":"stdout","time":14.962157608,"data":"    \"device_count\": 2,\n"}
+,{"stream_name":"stdout","time":14.962159802,"data":"    \"devices\": [\n"}
+,{"stream_name":"stdout","time":14.962162006,"data":"      {\n"}
+,{"stream_name":"stdout","time":14.96216414,"data":"        \"index\": 0,\n"}
+,{"stream_name":"stdout","time":14.962166341,"data":"        \"name\": \"Tesla T4\",\n"}
+,{"stream_name":"stdout","time":14.962169072,"data":"        \"total_memory_bytes\": 15636037632\n"}
+,{"stream_name":"stdout","time":14.962171316,"data":"      },\n"}
+,{"stream_name":"stdout","time":14.962173478,"data":"      {\n"}
+,{"stream_name":"stdout","time":14.962175576,"data":"        \"index\": 1,\n"}
+,{"stream_name":"stdout","time":14.962177731,"data":"        \"name\": \"Tesla T4\",\n"}
+,{"stream_name":"stdout","time":14.962179961,"data":"        \"total_memory_bytes\": 15636037632\n"}
+,{"stream_name":"stdout","time":14.962182175,"data":"      }\n"}
+,{"stream_name":"stdout","time":14.962184272,"data":"    ],\n"}
+,{"stream_name":"stdout","time":14.962186371,"data":"    \"small_cuda_test\": {\n"}
+,{"stream_name":"stdout","time":14.962188815,"data":"      \"passed\": true,\n"}
+,{"stream_name":"stdout","time":14.962191056,"data":"      \"allocated_bytes\": 8527872\n"}
+,{"stream_name":"stdout","time":14.962193275,"data":"    }\n"}
+,{"stream_name":"stdout","time":14.962195376,"data":"  },\n"}
+,{"stream_name":"stdout","time":14.96219752,"data":"  \"internet_kaggle\": {\n"}
+,{"stream_name":"stdout","time":14.962199799,"data":"    \"status_code\": 200\n"}
+,{"stream_name":"stdout","time":14.962201989,"data":"  }\n"}
+,{"stream_name":"stdout","time":14.96220409,"data":"}\n"}
+,{"stream_name":"stdout","time":14.96220627,"data":"\n"}
+,{"stream_name":"stdout","time":14.962208445,"data":"Saved report to /kaggle/working/kaggle_environment_report.json\n"}
+,{"stream_name":"stderr","time":19.743266326,"data":"/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":19.743314816,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":19.913741576,"data":"/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":19.913771362,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":20.531936791,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":20.830943869,"data":"[NbConvertApp] Writing 8099 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":23.224323212,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":24.013561046,"data":"[NbConvertApp] Writing 293851 bytes to __results__.html\n"}
+]
