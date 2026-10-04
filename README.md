@@ -149,7 +149,7 @@ So attaching the Dataset:
   those runs the notebook prints *nothing at all*, because its first line comes only after
   the container is up;
 - is not reproducible: 80 s vs 10+ min on the same kernel is a bad trade, and the bad case
-  costs GPU time and nerves with no output to show for it.
+  burns GPU time while producing no output to show for it.
 
 **Decision: do not attach the model Dataset by default.** `dataset_sources` in
 [`kaggle/07_qwen_comfyui_quick_interactive/kernel-metadata.json`](kaggle/07_qwen_comfyui_quick_interactive/kernel-metadata.json)
